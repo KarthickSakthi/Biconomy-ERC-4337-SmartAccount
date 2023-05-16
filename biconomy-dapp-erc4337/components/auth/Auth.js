@@ -13,16 +13,17 @@ export default function Auth(){
     const [loading, setLoading] = useState(false);
     let socialLoginRef = useRef();
 
-    useEffect( function configureSmartAccountLogin(){
+    useEffect( ()=>configureSmartAccountLogin(),[interval])
+
+    function configureSmartAccountLogin(){
         // let configLoginInterval = "";
-        if(interval){
        let configLoginInterval = setInterval(()=>{
-            if(socialLoginRef.current.provider){
+            if(!socialLoginRef?.current?.provider){
             initializeSmartAccount();
             clearInterval(configLoginInterval);}
-        },1000)}
-    },[interval])
-
+        },1000)
+    }
+    
     async function login (){
         if(!socialLoginRef.current){
             const socialLogin = new SocialLogin();
@@ -39,7 +40,7 @@ export default function Auth(){
         if(!socialLoginRef.current.provider){
             // socialLoginRef.current.showConnectModal();
             socialLoginRef.current.showWallet();
-            enableInterval(true);
+            configureSmartAccountLogin();
         }
         else{
             initializeSmartAccount();
