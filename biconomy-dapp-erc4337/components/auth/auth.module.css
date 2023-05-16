@@ -1,0 +1,33 @@
+
+ .detailsContainerStyle {
+  margin-top: 10px;
+}
+
+ .buttonStyle {
+  padding: 14px;
+  width: 300px;
+  border: none;
+  cursor: pointer;
+  border-radius: 999px;
+  outline: none;
+  margin-top: 20px;
+  transition: all .25s;
+  
+}
+
+.buttonStyle:hover {
+    background-color: rgba(0, 0, 0, .2); 
+  }
+
+.headerStyle{
+  font-size: 44px;
+}
+
+ .containerStyle{
+  width: 900px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  padding-top: 100px;
+}
