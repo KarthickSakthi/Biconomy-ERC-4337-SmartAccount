@@ -6,7 +6,7 @@ import { ethers } from "ethers"
 
 import styles from "./auth.module.css"
 
-export default Auth = ()=>{
+export default function Auth(){
 
     const [smartAccount, setSmartAccount] = useState(null);
     const [interval, enableInterval] = useState(false);
@@ -14,9 +14,9 @@ export default Auth = ()=>{
     let socialLoginRef = useRef();
 
     useEffect( function configureSmartAccountLogin(){
-        let configLoginInterval = "";
+        // let configLoginInterval = "";
         if(interval){
-        configLoginInterval = setInterval(()=>{
+       let configLoginInterval = setInterval(()=>{
             if(socialLoginRef.current.provider){
             initializeSmartAccount();
             clearInterval(configLoginInterval);}
@@ -34,10 +34,10 @@ export default Auth = ()=>{
             //   }
             // })
             await socialLogin.init(ethers.utils.hexValue(ChainId.POLYGON_MUMBAI));  // For Localhost
-            socialLoginRef = socialLogin.current;
+            socialLoginRef.current = socialLogin;
         }
         if(!socialLoginRef.current.provider){
-            socialLoginRef.current.showConnectModal();
+            // socialLoginRef.current.showConnectModal();
             socialLoginRef.current.showWallet();
             enableInterval(true);
         }
