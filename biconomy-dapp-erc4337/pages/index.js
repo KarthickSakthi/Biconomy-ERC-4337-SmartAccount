@@ -1,10 +1,14 @@
-import Image from 'next/image'
-import { Inter } from 'next/font/google'
+import dynamic from "next/dynamic";
+import { Suspense } from "react";
+// Biconomy Component Will cause issue due to Server side Rendering, So making a Dynamic Component from Client Side 
+ const Index = ()=>{
+  const BiconomyDynamicSocialLogin = dynamic(()=> import("../components/Auth").then((res)=> res.default),{ssr:false} );
 
-const inter = Inter({ subsets: ['latin'] })
-
-export default function Home() {
-  return (
-   <h1>Hello Web3 World</h1>
+  return(
+    <Suspense fallback={<div>...Loding</div>} >
+      <BiconomyDynamicSocialLogin/>
+    </Suspense>
   )
 }
+
+export default Index;
