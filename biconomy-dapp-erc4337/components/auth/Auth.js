@@ -56,9 +56,19 @@ export default function Auth(){
         try{
             const smartAccount = new SmartAccount(web3Provider, {
                 activeNetworkId: ChainId.POLYGON_MUMBAI,
-                supportedNetworksIds: [ChainId.POLYGON_MUMBAI]
+                supportedNetworksIds: [ChainId.POLYGON_MUMBAI],
+                networkConfig: [
+                  {
+                    chainId: ChainId.POLYGON_MUMBAI,
+                    // Dapp API Key you will get from new Biconomy dashboard that will be live soon
+                    // Meanwhile you can use the test dapp api key mentioned above
+                    dappAPIKey: "boCCwzoGv.78f4b3e3-1d6d-411c-b526-05f2a67540eb"
+                  }
+                ]
             });
             await smartAccount.init();
+            console.log("provider",socialLoginRef.current.provider );
+            console.log("smartAccount", smartAccount)
             setSmartAccount(smartAccount);
             setLoading(false);
         }
