@@ -51,7 +51,7 @@ export default function Auth(){
         if(! socialLoginRef?.current?.provider) return;
         setLoading(true);
         socialLoginRef.current.hideWallet();
-        const web3Provider = new ethers.providers.web3Provider(socialLoginRef.current.provider);
+        const web3Provider = new ethers.providers.Web3Provider(socialLoginRef.current.provider);
         
         try{
             const smartAccount = new SmartAccount(web3Provider, {
@@ -81,7 +81,8 @@ export default function Auth(){
     return (
         <div className={styles.containerStyle}>
       <h1 className={styles.headerStyle}>BICONOMY AUTH</h1>
-      {loading ? (<button className={styles.buttonStyle} onClick={login}>Login</button> ): !smartAccount ? (<button className={styles.buttonStyle} onClick={login}>Login</button>) : (
+      {loading && (<button className={styles.buttonStyle} onClick={login}>Login</button> )}
+      { !smartAccount ? (<button className={styles.buttonStyle} onClick={login}>Login</button>) : (
           <div className={styles.detailsContainerStyle}>
             <h3>Smart account address:</h3>
             <p>{smartAccount.address}</p>
