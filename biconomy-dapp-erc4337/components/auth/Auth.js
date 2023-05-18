@@ -56,15 +56,15 @@ export default function Auth(){
         try{
             const smartAccount = new SmartAccount(web3Provider, {
                 activeNetworkId: ChainId.POLYGON_MUMBAI,
-                supportedNetworksIds: [ChainId.POLYGON_MUMBAI],
-                networkConfig: [
-                  {
-                    chainId: ChainId.POLYGON_MUMBAI,
-                    // Dapp API Key you will get from new Biconomy dashboard that will be live soon
-                    // Meanwhile you can use the test dapp api key mentioned above
-                    dappAPIKey: "boCCwzoGv.78f4b3e3-1d6d-411c-b526-05f2a67540eb"
-                  }
-                ]
+                supportedNetworksIds: [ChainId.POLYGON_MUMBAI]
+                // networkConfig: [
+                //   {
+                //     chainId: ChainId.POLYGON_MUMBAI,
+                //     // Dapp API Key you will get from new Biconomy dashboard that will be live soon
+                //     // Meanwhile you can use the test dapp api key mentioned above
+                //     dappAPIKey: "boCCwzoGv.78f4b3e3-1d6d-411c-b526-05f2a67540eb"
+                //   }
+                // ]
             });
             await smartAccount.init();
             console.log("provider",socialLoginRef.current.provider );
@@ -88,18 +88,66 @@ export default function Auth(){
         setSmartAccount(null);
         enableInterval(false);
       }
+
+const gaslesstransferToken = async ()=>{
+    let recipientAddress = "0x0a440E6C019473AC554b7dD77bb9e799DA5D84b6";
+    let amount = 1;
+    let tokenContractAddress = "0x1408651E7254C89FAb6ACE33fE8C6Ee3D6F378Fa";
+    const erc20Interface = new ethers.utils.Interface([
+        'function transfer(address _to, uint256 _value)'
+      ])
+      
+      // Encode an ERC-20 token transfer to the recipient of the specified amount
+      const data = erc20Interface.encodeFunctionData(
+        'transfer', [recipientAddress, amount ]
+      )
+      
+      const tx1 = {
+        to: tokenContractAddress,
+        data
+      }
+      
+      // Transaction subscription
+      smartAccount.on('txHashGenerated', (response) => {
+        console.log('txHashGenerated event received via emitter', response);
+        showSuccessMessage(`Transaction sent: ${response.hash}`);
+      });
+      smartAccount.on('txMined', (response) => {
+        console.log('txMined event received via emitter', response);
+        showSuccessMessage(`Transaction mined: ${response.hash}`);
+      });
+      smartAccount.on('error', (response) => {
+        console.log('error event received via emitter', response);
+      });
+      
+      // Sending gasless transaction
+      const txResponse = await smartAccount.sendTransaction({ transaction: tx1 });
+      console.log('userOp hash', txResponse.hash);
+      // If you do not subscribe to listener, one can also get the receipt like shown below 
+      const txReciept = await txResponse.wait();
+      console.log('Tx hash', txReciept.transactionHash);
+      
+      // DONE! You just sent a gasless transaction
+}
     return (
         <div className={styles.containerStyle}>
-      <h1 className={styles.headerStyle}>BICONOMY AUTH</h1>
-      {loading && (<button className={styles.buttonStyle} onClick={login}>Login</button> )}
-      { !smartAccount ? (<button className={styles.buttonStyle} onClick={login}>Login</button>) : (
-          <div className={styles.detailsContainerStyle}>
-            <h3>Smart account address:</h3>
-            <p>{smartAccount.address}</p>
-            <button className={styles.buttonStyle} onClick={logout}>Logout</button>
-          </div>
-        )  }
-     
-    </div>
+        <h1 className={styles.headerStyle}>BICONOMY AUTH</h1>
+        {
+          !smartAccount && !loading && <button className={styles.buttonStyle} onClick={login}>Login</button>
+        }
+        {
+          loading && <p>Loading account details...</p>
+        }
+        {
+          !!smartAccount && (
+            <div className={styles.detailsContainerStyle}>
+              <h3>Smart account address:</h3>
+              <p>{smartAccount.address}</p>
+              <button className={styles.buttonStyle} onClick={gaslesstransferToken}>Transfer Token</button>
+              <button className={styles.buttonStyle} onClick={logout}>Logout</button>
+            </div>
+          )
+        }
+      </div>
     )
 }
