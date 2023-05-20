@@ -225,8 +225,10 @@ export default function Auth() {
         ],
       })
       await smartAccount.init()
+      await smartAccount.deployWalletUsingPaymaster();
       setSmartAccount(smartAccount)
       setLoading(false)
+    
     } catch (err) {
       console.log('error setting up smart account... ', err)
     }
@@ -294,24 +296,39 @@ export default function Auth() {
     //   feeQuote
     // })
 
-    let gasLimit = {
-      hex: '0x1E8480',
-      type: 'hex',
-    }
+    // const feeQuotes = await smartAccount.prepareRefundTransaction(
+    //   {transaction:tx}
+    // )
+    // console.log('feeQuotes: ', feeQuotes)
+
+    // /* find the matching fee quote to the selected gas token the user has chosen */
+    // const feeQuote = feeQuotes.find(quote => quote.symbol === gasToken.contract_ticker_symbol)
+
+    // if (!feeQuote) {
+    //   console.log('no matching quote ...')
+    //   return
+    // }
+
+    // /* define the transaction */
+    // const transaction = await smartAccount.createRefundTransaction({
+    //   transaction: tx,
+    //   feeQuote
+    // })
+
+    // let gasLimit = {
+    //   hex: '0x1E8480',
+    //   type: 'hex',
+    // }
 
     /* send the transaction */
     try {
       const txId = await smartAccount.sendTransaction({
-        tx: tx,
-        gasLimit
+        tx: tx
       })
-      const txReciept = await txResponse.wait();
-      console.log('Tx hash', txReciept.transactionHash);
       console.log({ txId })
     } catch (err) {
       console.log('ERROR SENDING TX: ', err)
     }
-      
       // Sending gasless transaction
       // const txResponse = await smartAccount.sendTransaction({ transaction: tx1 });
       // console.log('userOp hash', txResponse.hash);
