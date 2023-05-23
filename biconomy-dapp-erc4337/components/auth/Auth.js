@@ -29,12 +29,12 @@ export default function Auth() {
   async function login() {
     if (!sdkRef.current) {
       const socialLoginSDK = new SocialLogin()
-      const signature1 = await socialLoginSDK.whitelistUrl('https://3000-karthicksak-biconomyerc-u7i1okyymv3.ws-us97.gitpod.io ')
+      const signature1 = await socialLoginSDK.whitelistUrl('https://3000-karthicksak-biconomyerc-ssir56cqnfp.ws-us97.gitpod.io')
        await socialLoginSDK.init({
         chainId: ethers.utils.hexValue(ChainId.POLYGON_MUMBAI).toString(),
         network: "testnet",
         whitelistUrls: {
-          'https://3000-karthicksak-biconomyerc-u7i1okyymv3.ws-us97.gitpod.io ': signature1,
+          'https://3000-karthicksak-biconomyerc-ssir56cqnfp.ws-us97.gitpod.io': signature1,
         }
       })
       sdkRef.current = socialLoginSDK
