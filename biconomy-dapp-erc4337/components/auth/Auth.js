@@ -101,13 +101,15 @@ export default function Auth() {
     //   const data = erc20Interface.encodeFunctionData(
     //     'transfer', [recipientAddress, amount ]
     //   )
-      
-    const paymentContract = new ethers.Contract(paymentAddress,paymentAbi, sdkRef.current.provider );
+    const web3Provider = new ethers.providers.Web3Provider(
+      sdkRef.current.provider
+    )
+    const paymentContract = new ethers.Contract(paymentAddress,paymentAbi, web3Provider);
     console.log("provider",smartAccount )
-      const tx = {
-        to: tokenContractAddress,
-        data
-      }
+      // const tx = {
+      //   to: paymentAddress,
+      //   data
+      // }
       
       // Transaction subscription
       smartAccount.on('txHashGenerated', (response) => {
@@ -135,7 +137,6 @@ export default function Auth() {
     } catch (err) {
       console.log('ERROR SENDING TX: ', err)
     }
-
 }
 
   return (
