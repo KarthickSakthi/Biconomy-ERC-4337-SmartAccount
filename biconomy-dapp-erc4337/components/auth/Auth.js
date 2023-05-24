@@ -5,6 +5,8 @@ import SocialLogin from "@biconomy/web3-auth"
 import { ChainId } from "@biconomy/core-types";
 import { ethers } from 'ethers'
 import SmartAccount from "@biconomy/smart-account";
+import { paymentAddress } from '@/contracts/payment/address';
+import paymentAbi from "../../contracts/payment/payment.abi.json";
 
 
 export default function Auth() {
@@ -88,18 +90,20 @@ export default function Auth() {
   }
 
   const gaslesstransferToken = async ()=>{
-    let recipientAddress = "0x0a440E6C019473AC554b7dD77bb9e799DA5D84b6";
-    let amount = 1;
-    let tokenContractAddress = "0x1408651E7254C89FAb6ACE33fE8C6Ee3D6F378Fa";
-    const erc20Interface = new ethers.utils.Interface([
-        'function transfer(address _to, uint256 _value)'
-      ])
+    // let recipientAddress = "0x0a440E6C019473AC554b7dD77bb9e799DA5D84b6";
+    // let amount = 1 ;
+    // let tokenContractAddress = "0x1408651E7254C89FAb6ACE33fE8C6Ee3D6F378Fa";
+    // const erc20Interface = new ethers.utils.Interface([
+    //     'function transfer(address _to, uint256 _value)'
+    //   ])
       
-      // Encode an ERC-20 token transfer to the recipient of the specified amount
-      const data = erc20Interface.encodeFunctionData(
-        'transfer', [recipientAddress, amount ]
-      )
+    //   // Encode an ERC-20 token transfer to the recipient of the specified amount
+    //   const data = erc20Interface.encodeFunctionData(
+    //     'transfer', [recipientAddress, amount ]
+    //   )
       
+    const paymentContract = new ethers.Contract(paymentAddress,paymentAbi, sdkRef.current.provider );
+    console.log("provider",smartAccount )
       const tx = {
         to: tokenContractAddress,
         data
@@ -118,10 +122,14 @@ export default function Auth() {
         console.log('error event received via emitter', response);
       });
        
+
+    const transaction = await paymentContract.populateTransaction.add(1,2);
+    console.log("transaction",transaction)
     /* send the transaction */
     try {
       const txId = await smartAccount.sendTransaction({
-        tx: tx
+        tx: transaction,
+        data: transaction.data
       })
       console.log({ txId })
     } catch (err) {
