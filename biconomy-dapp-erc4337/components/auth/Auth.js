@@ -7,7 +7,9 @@ import Transak from "@biconomy/transak";
 import { ethers } from 'ethers'
 import SmartAccount from "@biconomy/smart-account";
 import { paymentAddress } from '@/contracts/payment/address';
+import { counterAddress } from '@/contracts/counter/address';
 import paymentAbi from "../../contracts/payment/payment.abi.json";
+import counterAbi from "../../contracts/counter/counter.abi.json"
 
 
 export default function Auth() {
@@ -61,10 +63,10 @@ export default function Auth() {
     try {
       const smartAccount = new SmartAccount(web3Provider, {
         activeNetworkId: ChainId.POLYGON_MUMBAI,
-        supportedNetworksIds: [ChainId.POLYGON_MUMBAI],
+        supportedNetworksIds: [ChainId.POLYGON_MUMBAI, ChainId.GOERLI],
         networkConfig: [
           {
-            chainId: ChainId.POLYGON_MUMBAI,
+            chainId: [ChainId.POLYGON_MUMBAI],
             dappAPIKey: "boCCwzoGv.78f4b3e3-1d6d-411c-b526-05f2a67540eb",
           },
         ],
@@ -137,7 +139,6 @@ export default function Auth() {
     try {
       const gaslessTransaction = await smartAccount.sendTransaction({
         transaction: txObject })
-      
         console.log("gaslessTransaction",gaslessTransaction)
       const receipt = await gaslessTransaction.wait();
       console.log("receipt", receipt )
@@ -149,6 +150,30 @@ export default function Auth() {
 function onRamp(){
   const transak = new Transak('STAGING');
   transak.init();
+}
+
+async function crossChainTransfer(){
+  console.warn("crossChainTransfer triggered")
+  try{const web3Provider = new ethers.providers.Web3Provider(
+    sdkRef.current.provider
+  )
+  const counterContract = new ethers.Contract(counterAddress,counterAbi, web3Provider);
+  const counterTransaction = await  counterContract.populateTransaction.increment();
+  const txObject = {
+    to: counterAddress,
+    data: counterTransaction.data,
+    }
+    console.log("smartAccount",smartAccount)
+  const counterTransactionResponse = await smartAccount.sendTransaction({ chainId: ChainId.GOERLI,
+    transaction: txObject 
+});
+  console.log("counterTransaction",counterTransactionResponse );
+
+  const counterTransactionReceipt = await counterTransactionResponse.wait();
+  console.log("counterTransactionResponse",counterTransactionResponse)}
+  catch (err) {
+    console.log('ERROR SENDING TX: ', err)
+  }
 }
 
   return (
@@ -171,6 +196,8 @@ function onRamp(){
       }
       <br/>
      <button onClick={gaslesstransferToken}> Transfer</button>      <br/>
+     <br/>
+     <button onClick={crossChainTransfer}> Cross chain</button>
      <br/>
      <button onClick={onRamp}> Do on Ramp</button>
     </div>
