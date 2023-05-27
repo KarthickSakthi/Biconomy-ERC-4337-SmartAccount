@@ -31,12 +31,12 @@ export default function Auth() {
   async function login() {
     if (!sdkRef.current) {
       const socialLoginSDK = new SocialLogin()
-      const signature1 = await socialLoginSDK.whitelistUrl('https://3000-karthicksak-biconomyerc-ssir56cqnfp.ws-us97.gitpod.io')
+      const signature1 = await socialLoginSDK.whitelistUrl('https://3000-karthicksak-biconomyerc-81qkdo5ns6t.ws-us98.gitpod.io')
        await socialLoginSDK.init({
         chainId: ethers.utils.hexValue(ChainId.POLYGON_MUMBAI).toString(),
         network: "testnet",
         whitelistUrls: {
-          'https://3000-karthicksak-biconomyerc-ssir56cqnfp.ws-us97.gitpod.io': signature1,
+          'https://3000-karthicksak-biconomyerc-81qkdo5ns6t.ws-us98.gitpod.io': signature1,
         }
       })
       sdkRef.current = socialLoginSDK
@@ -114,26 +114,32 @@ export default function Auth() {
       // Transaction subscription
       smartAccount.on('txHashGenerated', (response) => {
         console.log('txHashGenerated event received via emitter', response);
-        showSuccessMessage(`Transaction sent: ${response.hash}`);
+        console.log(`Transaction sent: ${response.hash}`);
       });
       smartAccount.on('txMined', (response) => {
         console.log('txMined event received via emitter', response);
-        showSuccessMessage(`Transaction mined: ${response.hash}`);
+        console.log(`Transaction mined: ${response.hash}`);
       });
       smartAccount.on('error', (response) => {
         console.log('error event received via emitter', response);
       });
        
 
-    const transaction = await paymentContract.populateTransaction.add(1,2);
-    console.log("transaction",transaction)
+    const currentTransaction = await paymentContract.populateTransaction.add(1,2);
+    console.log("transaction",currentTransaction)
+    console.log("smartAccountBeforeTransaction",smartAccount);
+    const txObject = {
+      to: paymentAddress,
+      data: currentTransaction.data,
+      }
     /* send the transaction */
     try {
-      const txId = await smartAccount.sendTransaction({
-        tx: transaction,
-        data: transaction.data
-      })
-      console.log({ txId })
+      const gaslessTransaction = await smartAccount.sendTransaction({
+        transaction: txObject })
+      
+        console.log("gaslessTransaction",gaslessTransaction)
+      const receipt = await gaslessTransaction.wait();
+      console.log("receipt", receipt )
     } catch (err) {
       console.log('ERROR SENDING TX: ', err)
     }
