@@ -3,6 +3,7 @@ import './auth.module.css'
 import { useState, useEffect, useRef } from 'react'
 import SocialLogin from "@biconomy/web3-auth"
 import { ChainId } from "@biconomy/core-types";
+import Transak from "@biconomy/transak";
 import { ethers } from 'ethers'
 import SmartAccount from "@biconomy/smart-account";
 import { paymentAddress } from '@/contracts/payment/address';
@@ -145,6 +146,11 @@ export default function Auth() {
     }
 }
 
+function onRamp(){
+  const transak = new Transak('STAGING');
+  transak.init();
+}
+
   return (
     <div>
       <h1>Biconomy SDK Auth + Gasless Transactions</h1>
@@ -164,7 +170,9 @@ export default function Auth() {
         )
       }
       <br/>
-     <button onClick={gaslesstransferToken}> Transfer</button>
+     <button onClick={gaslesstransferToken}> Transfer</button>      <br/>
+     <br/>
+     <button onClick={onRamp}> Do on Ramp</button>
     </div>
   )
 }
